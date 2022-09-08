@@ -22,12 +22,26 @@ mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https
     nonebot.load_plugin('nonebot_plugin_mcqq_server')
     
 ## 配置
+
+### bot添加配置
+
     # nonebot_plugin_mcqq_server
     guild_list = [{"guild_id": 47724881662376582, "channel_id": 10880356}] # QQ频道
     mc_log_path = "D:/MinecraftServer/logs" # log文件夹地址
     mc_ip: str = "127.0.0.1"    # 服务器 IP
     mcrcon_password: str = "1"  # MCRcon password
     mcrcon_port: int = 25575    # MCRcon 端口
+    
+### 服务器配置
+
+在配置文件 server.properties 中开启 Rcon
+
+    # rcon
+    enable-rcon=true
+    rcon.port=25575
+    rcon.password=设置rcon密码
+    
+    
 
 ### `guild_list` 配置QQ频道
 
