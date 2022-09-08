@@ -54,7 +54,7 @@ mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https
         
 列表元素为字典，字典中的 "guild_id"：频道ID，"channel_id":子频道ID
 
-获取频道ID和子频道ID的方法：
+#### 获取频道ID和子频道ID的方法：
 
 把bot拉进频道里，在频道里发一条消息，运行gocq的终端上会出现类似这样的INFO
 
