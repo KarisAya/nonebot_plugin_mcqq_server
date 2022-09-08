@@ -5,9 +5,7 @@
 
 # nonebot_plugin_mcqq_server
 
-mcqq服主版，采用本地读取log信息的方法。
-
-本插件为 [mcqq](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
+mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
 
 </div>
 
