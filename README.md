@@ -7,7 +7,7 @@
 
 mcqq服主版，采用本地读取log信息的方法。
 
-本插件为 [mcqq 基于 NoneBot 的与 Minecraft Server 互通消息插件](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
+本插件为 [mcqq](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
 
 </div>
 
