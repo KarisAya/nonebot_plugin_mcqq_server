@@ -5,9 +5,7 @@
 
 # nonebot_plugin_mcqq_server
 
-mcqq服主版，采用本地读取log信息的方法。
-
-本插件为 [mcqq 基于 NoneBot 的与 Minecraft Server 互通消息插件](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
+mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
 
 </div>
 
@@ -24,13 +22,26 @@ mcqq服主版，采用本地读取log信息的方法。
     nonebot.load_plugin('nonebot_plugin_mcqq_server')
     
 ## 配置
+
+### bot添加配置
+
     # nonebot_plugin_mcqq_server
-    guild_list = [{"guild_id": 47724881662376582, "channel_id": 10880356}] # QQ频道
+    group_list = [744751179]  # QQ群
+    guild_list = [{"guild_id": 47724881662376582, "channel_id": 10880356}]  # QQ频道
     mc_log_path = "D:/MinecraftServer/logs" # log文件夹地址
     mc_ip: str = "127.0.0.1"    # 服务器 IP
     mcrcon_password: str = "1"  # MCRcon password
     mcrcon_port: int = 25575    # MCRcon 端口
+    
+### 服务器配置
 
+在配置文件 server.properties 中开启 Rcon
+
+    # rcon
+    enable-rcon=true
+    rcon.port=25575 # 设置rcon端口，与mcrcon_port一致。
+    rcon.password=1 # 设置rcon密码，与mcrcon_password一致。
+    
 ### `guild_list` 配置QQ频道
 
 格式：
@@ -42,7 +53,7 @@ mcqq服主版，采用本地读取log信息的方法。
         
 列表元素为字典，字典中的 "guild_id"：频道ID，"channel_id":子频道ID
 
-获取频道ID和子频道ID的方法：
+#### 获取频道ID和子频道ID的方法：
 
 把bot拉进频道里，在频道里发一条消息，运行gocq的终端上会出现类似这样的INFO
 
@@ -55,5 +66,5 @@ mcqq服主版，采用本地读取log信息的方法。
 ## Todo:
 
 - [x] QQ频道适配
-- [ ] 群聊适配
+- [x] 群聊适配
 - [ ] 远程服务器模式
