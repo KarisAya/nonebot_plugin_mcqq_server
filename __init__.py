@@ -1,5 +1,5 @@
 from nonebot import get_driver, on_message
-from nonebot.adapters.onebot.v11 import Bot,MessageEvent,Message
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent, Event, Message
 from nonebot.log import logger
 
 import nonebot
@@ -9,12 +9,13 @@ import mcrcon
 from nonebot_plugin_guild_patch import GuildMessageEvent
 from pathlib import Path
 from .utils import (
-   guild_list,
-   mc_log_path,
-   mc_ip,
-   mcrcon_password,
-   mcrcon_port
-   )
+    group_list,
+    guild_list,
+    mc_log_path,
+    mc_ip,
+    mcrcon_password,
+    mcrcon_port
+    )
 from .utils import mcrcon_connect, mc_translate, log_to_dict
 
 log = Path(mc_log_path) / "latest.log"
@@ -39,9 +40,13 @@ if log.exists():
                     msg_dict = log_to_dict(line[i])
                     if msg_dict["type"] == "message":
                         msg =f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
+                        for group in group_list:
+                            await bot.send_group_msg(
+                                group_id = group,
+                                message = msg
+                                )
                         for guild in guild_list:
-                            await bot.call_api(
-                                "send_guild_channel_msg",
+                            await bot.send_guild_channel_msg(
                                 guild_id = guild['guild_id'],
                                 channel_id = guild['channel_id'],
                                 message = msg
@@ -52,23 +57,26 @@ if log.exists():
 else:
     nonebot.logger.error(f"mc_log_path 地址设置错误，{log} 不存在。")
 
+mcr = asyncio.run(mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port))
+
 # 定义CUSTOMER权限
 
-async def CUSTOMER(bot: Bot, event: GuildMessageEvent) -> bool:
-    for guild in guild_list:
-        if event.guild_id == guild["guild_id"] and event.channel_id == guild["channel_id"]:
-            return True
+async def CUSTOMER(bot: Bot, event: Event) -> bool:
+    if isinstance(event,GroupMessageEvent):
+        return event.group_id in group_list
+    elif isinstance(event,GuildMessageEvent):
+        for guild in guild_list:
+            if event.guild_id == guild["guild_id"] and event.channel_id == guild["channel_id"]:
+                return True
         else:
-            continue
+            return False
     else:
         return False
-
-mcr = asyncio.run(mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port))
 
 send = on_message(permission = CUSTOMER, priority = 10)
 
 @send.handle()
-async def _(bot: Bot, event: GuildMessageEvent):
+async def _(bot: Bot, event: Event):
     global mcr
     msg = await mc_translate(bot, event)
     try:
@@ -77,7 +85,5 @@ async def _(bot: Bot, event: GuildMessageEvent):
         raise error
     except ConnectionAbortedError:
         mcr = await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
-
-
 
 
