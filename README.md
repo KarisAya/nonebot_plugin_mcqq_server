@@ -38,11 +38,9 @@ mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https
 
     # rcon
     enable-rcon=true
-    rcon.port=25575
-    rcon.password=设置rcon密码
+    rcon.port=25575 # 设置rcon端口，与mcrcon_port一致。
+    rcon.password=1 # 设置rcon密码，与mcrcon_password一致。
     
-    
-
 ### `guild_list` 配置QQ频道
 
 格式：
