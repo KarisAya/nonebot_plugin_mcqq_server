@@ -20,7 +20,8 @@ from .utils import mcrcon_connect, mc_translate, log_to_dict
 
 log = Path(mc_log_path) / "latest.log"
 if log.exists():
-    nonebot.logger.success(f"已找到 {log}")
+    logger.success(f"已找到 {log}")
+
     driver = get_driver()
 
     @driver.on_bot_connect
@@ -36,8 +37,8 @@ if log.exists():
                 pos = fp.seek(0,2)
                 line.replace("\r\n","\n")
                 line = line.strip('\n').split('\n')
-                for i in range(len(line)):
-                    msg_dict = log_to_dict(line[i])
+                for x in line:
+                    msg_dict = log_to_dict(x)
                     if msg_dict["type"] == "message":
                         msg =f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
                         for group in group_list:
@@ -55,9 +56,7 @@ if log.exists():
             fp.close()
             await asyncio.sleep(1)
 else:
-    nonebot.logger.error(f"mc_log_path 地址设置错误，{log} 不存在。")
-
-mcr = asyncio.run(mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port))
+    logger.error(f"mc_log_path 地址设置错误，{log} 不存在。")
 
 # 定义CUSTOMER权限
 
@@ -73,6 +72,8 @@ async def CUSTOMER(bot: Bot, event: Event) -> bool:
     else:
         return False
 
+mcr = asyncio.run(mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port))
+
 send = on_message(permission = CUSTOMER, priority = 10)
 
 @send.handle()
@@ -81,9 +82,7 @@ async def _(bot: Bot, event: Event):
     msg = await mc_translate(bot, event)
     try:
         mcr.command(msg)
-    except (mcrcon.MCRconException, ConnectionResetError) as error:
-        raise error
-    except ConnectionAbortedError:
+    except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
         mcr = await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
-
+        mcr.command(msg)
 
