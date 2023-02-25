@@ -12,7 +12,6 @@ from .utils import (
     group_list,
     guild_list,
     mc_log_path,
-    mc_ip,
     mcrcon_password,
     mcrcon_port
     )
@@ -72,7 +71,7 @@ async def CUSTOMER(bot: Bot, event: Event) -> bool:
     else:
         return False
 
-mcr = asyncio.run(mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port))
+mcr = asyncio.run(mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port))
 
 send = on_message(permission = CUSTOMER, priority = 10)
 
@@ -83,6 +82,6 @@ async def _(bot: Bot, event: Event):
     try:
         mcr.command(msg)
     except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
-        mcr = await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
+        mcr = await mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port)
         mcr.command(msg)
 

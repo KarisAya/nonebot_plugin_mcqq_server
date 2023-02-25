@@ -105,7 +105,7 @@ def log_to_dict(loginfo:str) -> dict:
     转换log信息
     :param loginfo:log信息
     '''
-    if res := re.search(":<(.+)>(.+)",loginfo):
+    if res := re.search(": <(.+)>(.+)",loginfo):
         return {"nickname":res.group(1),"message":res.group(2)}
     else:
         return None
