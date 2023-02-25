@@ -98,6 +98,7 @@ async def CUSTOMER(event: MessageEvent) -> bool:
         return False
 
 mcr = asyncio.run(mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port))
+
 flag = True
 
 async def check():
@@ -112,13 +113,6 @@ async def _(bot: Bot, event: Event):
     try:
         mcr.command(msg)
         flag = True
-    except (mcrcon.MCRconException, ConnectionResetError, ConnectionAbortedError):
-        flag = False
+    except:
         mcr = await mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port)
-        mcr.command(msg)
-    except AttributeError:
         flag = False
-        mcr = await mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port)
-    except Exception as e:
-        flag = True
-        logger.error(f"与 MCRcon 的连接出现错误：{e}")
