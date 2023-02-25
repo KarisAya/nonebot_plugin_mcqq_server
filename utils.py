@@ -33,8 +33,7 @@ async def mcrcon_connect(mc_ip: str,mcrcon_password: str, mcrcon_port:int):
         logger.success("与 MCRcon 连接成功！")
         return mcr
     except (OSError, ConnectionRefusedError) as e:
-        logger.info("与 MCRcon 连接失败，正在重新连接...")
-        logger.info(e)
+        logger.info(f"与 MCRcon 连接失败，正在重新连接...{e}")
         await asyncio.sleep(3)
         await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
 
