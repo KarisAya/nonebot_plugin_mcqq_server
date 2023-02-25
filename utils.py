@@ -17,7 +17,6 @@ config = Config.parse_obj(global_config.dict())
 group_list = config.group_list
 guild_list = config.guild_list
 mc_log_path = config.mc_log_path
-mc_ip = config.mc_ip
 mcrcon_password = config.mcrcon_password
 mcrcon_port = config.mcrcon_port
 
