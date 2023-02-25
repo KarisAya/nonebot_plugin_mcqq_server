@@ -65,18 +65,19 @@ if log.exists():
             fp = open(log, "r", encoding = "utf8")
             fp.seek(pos, 0)
             line = fp.read()
-            if line and switch:
+            if line:
                 pos = fp.seek(0,2)
-                line.replace("\r\n","\n")
-                line = line.strip('\n').split('\n')
-                for x in line:
-                    msg_dict = log_to_dict(x)
-                    if msg_dict:
-                        msg = f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
-                        for group in group_list:
-                            await bot.send_group_msg(group_id = group,message = msg)
-                        for guild in guild_list:
-                            await bot.send_guild_channel_msg(guild_id = guild['guild_id'],channel_id = guild['channel_id'],message = msg)
+                if switch:
+                    line.replace("\r\n","\n")
+                    line = line.strip('\n').split('\n')
+                    for x in line:
+                        msg_dict = log_to_dict(x)
+                        if msg_dict:
+                            msg = f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
+                            for group in group_list:
+                                await bot.send_group_msg(group_id = group,message = msg)
+                            for guild in guild_list:
+                                await bot.send_guild_channel_msg(guild_id = guild['guild_id'],channel_id = guild['channel_id'],message = msg)
             fp.close()
             await asyncio.sleep(1)
 else:
@@ -84,7 +85,7 @@ else:
 
 # 定义CUSTOMER权限
 
-async def CUSTOMER(bot: Bot, event: Event) -> bool:
+async def CUSTOMER(event: MessageEvent) -> bool:
     if isinstance(event,GroupMessageEvent):
         return event.group_id in group_list
     elif isinstance(event,GuildMessageEvent):
