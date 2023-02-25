@@ -4,12 +4,9 @@ from nonebot.adapters.onebot.v11 import GROUP_ADMIN,GROUP_OWNER
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
 from nonebot.log import logger
-
-import nonebot
-import asyncio
-import mcrcon
-
 from nonebot_plugin_guild_patch import GuildMessageEvent
+import asyncio
+
 from pathlib import Path
 from .utils import (
     group_list,
