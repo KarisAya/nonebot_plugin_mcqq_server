@@ -39,8 +39,8 @@ if log.exists():
                 line = line.strip('\n').split('\n')
                 for x in line:
                     msg_dict = log_to_dict(x)
-                    if msg_dict["type"] == "message":
-                        msg =f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
+                    if msg_dict:
+                        msg = f'【{msg_dict["nickname"]}】{msg_dict["message"]}'
                         for group in group_list:
                             await bot.send_group_msg(
                                 group_id = group,

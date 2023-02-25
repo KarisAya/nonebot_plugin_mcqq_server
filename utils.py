@@ -3,6 +3,7 @@ from nonebot.log import logger
 from mcrcon import MCRcon
 
 import nonebot
+import re
 import time
 import asyncio
 
@@ -32,9 +33,10 @@ async def mcrcon_connect(mc_ip: str,mcrcon_password: str, mcrcon_port:int):
         mcr.connect()
         logger.success("与 MCRcon 连接成功！")
         return mcr
-    except (OSError, ConnectionRefusedError):
+    except (OSError, ConnectionRefusedError) as e:
         logger.info("与 MCRcon 连接失败，正在重新连接...")
-        await asyncio.sleep(0.5)
+        logger.info(e)
+        await asyncio.sleep(3)
         await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
 
 async def mc_translate(bot: Bot, event: Event):
@@ -103,18 +105,7 @@ def log_to_dict(loginfo:str) -> dict:
     转换log信息
     :param loginfo:log信息
     '''
-    l = loginfo.find('<')
-    r = loginfo.find('>')
-    if l != -1 and r != -1:
-        return {
-            "type":"message",
-            "nickname":loginfo[l+1:r],
-            "message":loginfo[r+2:]
-            }
+    if res := re.search(":<(.+)>(.+)",loginfo):
+        return {"nickname":res.group(1),"message":res.group(2)}
     else:
-        x = loginfo.find(':')
-        return {
-            "type":"log",
-            "log":loginfo[:x],
-            "info":loginfo[x+2:]
-            }
+        return None
