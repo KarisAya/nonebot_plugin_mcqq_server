@@ -20,7 +20,7 @@ mc_log_path = config.mc_log_path
 mcrcon_password = config.mcrcon_password
 mcrcon_port = config.mcrcon_port
 
-async def mcrcon_connect(mc_ip: str,mcrcon_password: str, mcrcon_port:int):
+async def mcrcon_connect(mc_ip: str,mcrcon_password: str, mcrcon_port:int) -> MCRcon:
     """
     与 mcrcon 建立连接
     :param mc_ip: 服务器 IP
@@ -35,7 +35,7 @@ async def mcrcon_connect(mc_ip: str,mcrcon_password: str, mcrcon_port:int):
     except (OSError, ConnectionRefusedError) as e:
         logger.info(f"与 MCRcon 连接失败，正在重新连接...{e}")
         await asyncio.sleep(3)
-        await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
+        return await mcrcon_connect(mc_ip, mcrcon_password, mcrcon_port)
 
 async def mc_translate(bot: Bot, event: Event):
     '''
@@ -55,7 +55,7 @@ async def mc_translate(bot: Bot, event: Event):
 
     command_msg = 'tellraw @a ["",'
     # 插件名与发言人昵称
-    command_msg += '{"text": "' + Tip + (event.sender.card or event.sender.nickname) + ' 说：","color": "white"},'
+    command_msg += '{"text": "' + Tip + (event.sender.nickname or event.sender.card) + ' 说：","color": "white"},'
     # 文本信息
     text_msg = ''
     for msg in event.message:
