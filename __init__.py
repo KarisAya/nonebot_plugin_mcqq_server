@@ -1,3 +1,4 @@
+from pathlib import Path
 from nonebot import get_driver, on_message, on_command
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -9,21 +10,19 @@ from nonebot.adapters.onebot.v11 import (
     )
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_guild_patch import GuildMessageEvent
-from nonebot.rule import to_me
 from nonebot.log import logger
-
+from mcrcon import MCRcon
+import time
 import asyncio
 
-from pathlib import Path
-from .utils import (
+from .config import (
     group_list,
     guild_list,
     mc_log_path,
     mcrcon_password,
     mcrcon_port
     )
-from .utils import mcrcon_connect, mc_translate, log_to_dict
-
+from .utils import mc_translate, log_to_dict
 
 driver = get_driver()
 
@@ -80,12 +79,38 @@ if log.exists():
     logger.success(f"已找到 {log}")
     receive.append_handler(MC_TO_QQ)
     driver.on_bot_connect(MC_TO_QQ)
-    mcr = asyncio.run(mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port))
 else:
     logger.error(f"mc_log_path 地址设置错误，{log} 不存在。")
 
+mcr = MCRcon("127.0.0.1", mcrcon_password, mcrcon_port)
 
-# 定义CUSTOMER权限
+async def QQ_TO_MC(event: Event):
+    global mcrcon_connect_is_running
+    if mcrcon_connect_is_running:
+        return
+    global mcr
+    timeout = time.time() + 30
+    while time.time() < timeout:
+        try:
+            mcr.command(mc_translate(event))
+            break
+        except (OSError, ConnectionRefusedError) as e:
+            logger.error(f"信息发送失败：{e}")
+            await mcrcon_connect(mcr)
+
+mcrcon_connect_is_running = False
+
+async def mcrcon_connect(mcr:MCRcon):
+    global mcrcon_connect_is_running
+    mcrcon_connect_is_running = True
+    try:
+        mcr.connect()
+        mcrcon_connect_is_running = False
+        logger.success("与 MCRcon 连接成功！")
+    except (OSError, ConnectionRefusedError) as e:
+        logger.info(f"与 MCRcon 连接失败，正在重新连接...{e}")
+        await asyncio.sleep(3)
+        await mcrcon_connect(mcr)
 
 async def CUSTOMER(event: MessageEvent) -> bool:
     if isinstance(event,GroupMessageEvent):
@@ -98,16 +123,5 @@ async def CUSTOMER(event: MessageEvent) -> bool:
             return False
     return False
 
-async def QQ_TO_MC(bot: Bot, event: Event):
-    msg = await mc_translate(bot, event)
-    global mcr
-    while True:
-        try:
-            mcr.command(msg)
-            break
-        except Exception as e:
-            logger.error(f"连接失效：{e}")
-            mcr = await mcrcon_connect("127.0.0.1", mcrcon_password, mcrcon_port)
-
-send = on_message(rule = lambda :switch, permission = CUSTOMER, priority = 10)
+send = on_message(rule = lambda :switch and not mcrcon_connect_is_running, permission = CUSTOMER, priority = 10)
 send.append_handler(QQ_TO_MC)
