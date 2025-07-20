@@ -8,7 +8,7 @@ from . import __main__ as _
 # 插件元数据
 __plugin_meta__ = PluginMetadata(
     name="Minecraft Server 消息互通",
-    description="mcqq服主版，采用本地读取log信息的方法的Minecraft Server消息互通的插件。",
+    description="采用本地读取 log 信息的方法的 Minecraft Server 消息互通插件。",
     usage="",
     homepage="https://github.com/KarisAya/nonebot_plugin_mcqq_server",
     type="application",

@@ -1,10 +1,11 @@
 import asyncio
 from pathlib import Path
-from nonebot import get_driver, get_bots, on_message, get_plugin_config
+from nonebot import get_driver, get_bots, on_message, on_command, get_plugin_config
 from nonebot.log import logger
 from nonebot.rule import Rule
 from nonebot.typing import T_State
-from nonebot.adapters import Bot
+from nonebot.permission import SUPERUSER
+from nonebot.adapters import Bot, Event
 from mcrcon import MCRcon, MCRconException
 from nonebot_plugin_alconna.uniseg import UniMsg, Target
 from nonebot_plugin_uninfo import Session, UniSession
@@ -18,24 +19,11 @@ PORT = __config__.mcrcon_port
 MCRCON = MCRcon("127.0.0.1", PASSWORD, PORT)
 
 
-async def myrule(state: T_State, session: Session = UniSession()) -> bool:
-    group_id = session.scene.id
-    if group_id in __config__.mcs_group_list:
-        state["group"] = session.scene.name or group_id
-        state["name"] = session.user.nick or session.user.name or session.user.id
-        return True
-    else:
-        return False
-
-
 reapter = range(3)
 mcrcon_disconnected: bool = True
 
 
-async def handler(msg: UniMsg, state: T_State):
-    cmd = translate2cmd(state["group"], state["name"], msg)
-    if not cmd:
-        return
+def call_command(cmd: str):
     global mcrcon_disconnected, reapter
     for _ in reapter:
         try:
@@ -49,6 +37,16 @@ async def handler(msg: UniMsg, state: T_State):
             logger.exception("信息发送失败")
 
 
+async def myrule(state: T_State, session: Session = UniSession()) -> bool:
+    group_id = session.scene.id
+    if group_id in __config__.mcs_group_list:
+        state["group"] = session.scene.name or group_id
+        state["name"] = session.user.nick or session.user.name or session.user.id
+        return True
+    else:
+        return False
+
+
 rule = Rule(myrule)
 if __config__.mcs_group_cmd:
     from nonebot.rule import command
@@ -56,8 +54,25 @@ if __config__.mcs_group_cmd:
     rule = command(*set(__config__.mcs_group_cmd)) & rule
 
 
-matcher = on_message(rule, priority=10)
-matcher.append_handler(handler)
+message_forwarding = on_message(rule, priority=10)
+
+
+@message_forwarding.handle()
+async def _(msg: UniMsg, state: T_State):
+    cmd = translate2cmd(state["group"], state["name"], msg)
+    if cmd:
+        call_command(cmd)
+
+
+command_forwarding = on_command("mcs指令", permission=SUPERUSER, priority=10)
+
+
+@command_forwarding.handle()
+async def _(event: Event):
+    cmd = event.get_plaintext()[len("mcs指令") :].strip()
+    print("mcs指令", cmd)
+    if cmd:
+        call_command(f"/{cmd}")
 
 
 LOG_PATH = Path(__config__.mcs_log_path)
