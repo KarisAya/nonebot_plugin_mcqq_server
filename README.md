@@ -57,7 +57,7 @@ MCS_MC_BROADCAST = '{"all":["724024810"]}'。
 - `MCS_MC_CMD` 服务器广播命令，如果为空则将服务器消息全部转发至群组。
 - `MCS_MC_BROADCAST` 广播分配配置，键是 Bot ID, 值是该 Bot 负责广播的群组列表
 
-_特别注意：当 `MCS_MC_BROADCAST` 的键为 `all` 时为单 bot 模式会，此时插件会用第一个 bot 进行广播。如果键设置为 `all` 不可以设置其他 bot_
+_特别注意：当 `MCS_MC_BROADCAST` 的键为 `all` 时为单 bot 模式，此时插件会用第一个 bot 进行广播。如果键设置为 `all` 不可以设置其他 bot_
 
 2. 服务端配置文件
 
