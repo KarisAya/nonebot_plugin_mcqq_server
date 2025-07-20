@@ -3,68 +3,47 @@
 </p>
 <div align="center">
 
-# nonebot_plugin_mcqq_server
+# Minecraft Server 消息互通
 
-mcqq服主版，采用本地读取log信息的方法。本插件为 [mcqq](https://github.com/KarisAya/nonebot-plugin-mcqq) 的二创
+mcqq 服主版，采用本地读取 log 信息的方法。本插件为 [MCQQ](https://github.com/17TheWord/nonebot-plugin-mcqq) 的二创
 
 </div>
 
-## 需要安装
+# 安装
 
-[nonebot_plugin_guild_patch](https://github.com/mnixry/nonebot-plugin-guild-patch) NoneBot2 QQ 频道 (go-cqhttp) 支持适配补丁插件
+```bash
+nb plugin install nonebot-plugin-mcqq-server
+```
 
-## 安装
+# Bot 配置与服务端配置
 
-    pip install nonebot_plugin_mcqq_server
+1. Bot 配置文件
 
-## 使用
+在 nb 项目路径下找到 `.env.prod` 文件，添加以下内容
 
-    nonebot.load_plugin('nonebot_plugin_mcqq_server')
-    
-## 配置
+```dotenv
+# Minecraft Server 消息互通
+MCRCON_PASSWORD = "A"
+MCRCON_PORT = 25575
+MCS_LOG_PATH = "D:/MinecraftServer/logs"
+# 功能配置
+MCS_GROUP_CMD = [] # 群转发触发命令，如果为空则将群聊消息全部转发至服务器。
+MCS_GROUP_LIST = ["724024810"] # QQ群
+MCS_MC_CMD = ['.bd']
+MCS_MC_BROADCAST = '{'all':["724024810"]}' # 一个字典，键是bot_id, 值是本 bot 负责广播的群组列表。
+```
 
-### bot添加配置
+_特别注意：当 `MCS_MC_BROADCAST` 的键为 `all` 时 会用第一个 bot 进行广播。并且如果键设置为 `all` 不可以设置其他 bot_
 
-    # nonebot_plugin_mcqq_server
-    group_list = [744751179]  # QQ群
-    guild_list = [{"guild_id": 47724881662376582, "channel_id": 10880356}]  # QQ频道
-    mc_log_path = "D:/MinecraftServer/logs" # log文件夹地址
-    mc_ip: str = "127.0.0.1"    # 服务器 IP
-    mcrcon_password: str = "1"  # MCRcon password
-    mcrcon_port: int = 25575    # MCRcon 端口
-    
-### 服务器配置
+2. 服务端配置文件
 
-在配置文件 server.properties 中开启 Rcon
+在 MC 服务端文件的 `server.properties` 中开启 Rcon
 
-    # rcon
-    enable-rcon=true
-    rcon.port=25575 # 设置rcon端口，与mcrcon_port一致。
-    rcon.password=1 # 设置rcon密码，与mcrcon_password一致。
-    
-### `guild_list` 配置QQ频道
+```properties
+# rcon
+enable-rcon=true
+rcon.password=1 # 设置rcon密码，与mcrcon_password一致。
+rcon.port=25575 # 设置rcon端口，与mcrcon_port一致。
+```
 
-格式：
-
-    guild_list: list = [
-        {"guild_id": 0, "channel_id": 0},
-        {"guild_id": 1, "channel_id": 1}
-        ]
-        
-列表元素为字典，字典中的 "guild_id"：频道ID，"channel_id":子频道ID
-
-#### 获取频道ID和子频道ID的方法：
-
-把bot拉进频道里，在频道里发一条消息，运行gocq的终端上会出现类似这样的INFO
-
-    [2022-09-09 01:36:29] [INFO]: 收到来自频道 樱桃味文酱的游戏频道(47724881662376582) 子频道 闲聊(10880356) 内 小叶叶叶子(144115218933268761) 的消息: hello
-
-频道ID：47724881662376582
-
-子频道ID：10880356
-
-## Todo:
-
-- [x] QQ频道适配
-- [x] 群聊适配
-- [ ] 远程服务器模式
+# 使用方法

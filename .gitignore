@@ -1,0 +1,7 @@
+__pycache__/
+.vs
+.vscode
+.venv
+distpoetr
+dist
+servers/
