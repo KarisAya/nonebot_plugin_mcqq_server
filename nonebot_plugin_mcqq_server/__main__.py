@@ -138,13 +138,13 @@ else:
     else:
         from .utils import parse_log
 
-    lisen_running = True
+    listen_running = True
 
     async def lisen_log():
         fp = LOG_PATH.open("r", encoding="utf8")
         fp.seek(0, 2)
-        global lisen_running
-        while lisen_running:
+        global listen_running
+        while listen_running:
             try:
                 pos = fp.tell()
                 lines = await asyncio.to_thread(fp.readlines)
@@ -171,6 +171,6 @@ else:
 
     @driver.on_shutdown
     async def _():
-        global task, lisen_running
-        lisen_running = False
+        global task, listen_running
+        listen_running = False
         await task
