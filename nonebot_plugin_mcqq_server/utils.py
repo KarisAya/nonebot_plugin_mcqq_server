@@ -42,7 +42,7 @@ def translate2cmd(group: str, name: str, msg: UniMsg):
 
 
 # [19:49:44] [Server thread/INFO]: <KarisAya> 1
-pattern = re.compile(r"^\[\d\d:\d\d:\d\d\] \[Server thread/INFO\]: <(.+)> (.+)")
+pattern = re.compile(r"<(.+)> (.+)")
 
 
 def parse_log(loginfo: str) -> tuple[str, str] | None:
@@ -55,5 +55,5 @@ def parse_log(loginfo: str) -> tuple[str, str] | None:
     Returns:
         return (tuple[str, str] | None): 解析内容：(玩家名, 聊天内容)
     """
-    if match := pattern.match(loginfo):
+    if match := pattern.search(loginfo):
         return match.groups()  # type: ignore 这里一定是匹配的
