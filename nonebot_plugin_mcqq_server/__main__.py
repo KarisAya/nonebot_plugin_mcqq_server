@@ -140,7 +140,7 @@ else:
 
     listen_running = True
 
-    async def lisen_log():
+    async def listen_log():
         fp = LOG_PATH.open("r", encoding="utf8")
         fp.seek(0, 2)
         global listen_running
@@ -167,7 +167,7 @@ else:
     @driver.on_startup
     async def _():
         global task
-        task = asyncio.create_task(lisen_log())
+        task = asyncio.create_task(listen_log())
 
     @driver.on_shutdown
     async def _():
