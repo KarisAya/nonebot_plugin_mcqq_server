@@ -54,7 +54,7 @@ if __config__.mcs_group_cmd:
     rule = command(*set(__config__.mcs_group_cmd)) & rule
 
 
-message_forwarding = on_message(rule, priority=10)
+message_forwarding = on_message(rule, priority=10, block=False)
 
 
 @message_forwarding.handle()
@@ -76,23 +76,23 @@ async def _(event: Event):
 
 
 LOG_PATH = Path(__config__.mcs_log_path)
-mc_broadcast = __config__.mcs_mc_broadcast
 
-bots = get_bots()
-
-
-async def send(target_id: str, bot: Bot, message: str):
-    try:
-        target = Target(id=target_id, private=False, self_id=bot.self_id)
-        await target.send(message)
-    except Exception as e:
-        logger.error(f"{bot.self_id}发送消息失败: {e}")
-
-
-if not LOG_PATH.exists():
+if not __config__.mcs_log_path:
+    logger.success(f"已关闭服务器广播。")
+elif not LOG_PATH.exists():
     logger.error(f"未找到 {LOG_PATH.as_posix()}, 无法进行日志广播。")
 else:
+    bots = get_bots()
+
+    async def send(target_id: str, bot: Bot, message: str):
+        try:
+            target = Target(id=target_id, private=False, self_id=bot.self_id)
+            await target.send(message)
+        except Exception as e:
+            logger.error(f"{bot.self_id}发送消息失败: {e}")
+
     logger.success(f"已找定位到文件 {LOG_PATH.as_posix()}")
+    mc_broadcast = __config__.mcs_mc_broadcast
     if "all" in mc_broadcast:
 
         async def broadcast(message: str):

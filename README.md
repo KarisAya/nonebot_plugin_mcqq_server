@@ -51,7 +51,7 @@ MCS_MC_BROADCAST = '{"all":["724024810"]}'。
 
 - `MCRCON_PASSWORD` rcon 密码
 - `MCRCON_PORT` rcon 端口
-- `MCS_LOG_PATH` 服务端日志文件路径，精确到日志文件
+- `MCS_LOG_PATH` 服务端日志文件路径，精确到日志文件，为空则关闭广播。
 - `MCS_GROUP_CMD` 群转发触发命令，如果为空则将群聊消息全部转发至服务器。
 - `MCS_GROUP_LIST` 转发至服务器的群组列表
 - `MCS_MC_CMD` 服务器广播命令，如果为空则将服务器消息全部转发至群组。
