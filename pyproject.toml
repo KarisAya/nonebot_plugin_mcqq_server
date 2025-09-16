@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-mcqq-server"
-version = "1.1.2"
+version = "1.1.3"
 description = "采用本地读取 log 信息的方法的 Minecraft Server 消息互通插件。"
 authors = [{ name = "KarisAya", email = "karisaya@foxmail.com" }]
 readme = "README.md"

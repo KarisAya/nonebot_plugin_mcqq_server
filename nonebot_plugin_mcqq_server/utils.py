@@ -38,7 +38,7 @@ def translate2cmd(group: str, name: str, msg: UniMsg):
                 seg_data["clickEvent"] = ({"action": "open_url", "value": seg.url},)
                 seg_data["hoverEvent"] = {"action": "show_text", "contents": [{"text": "查看视频", "color": "white"}]}
     if data:
-        return f"/tellraw @a {json.dumps(data)}"
+        return f"tellraw @a {json.dumps(data)}"
 
 
 # [19:49:44] [Server thread/INFO]: <KarisAya> 1

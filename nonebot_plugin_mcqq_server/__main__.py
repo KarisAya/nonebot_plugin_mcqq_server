@@ -30,8 +30,7 @@ def call_command(cmd: str):
             if mcrcon_disconnected:
                 MCRCON.connect()
                 mcrcon_disconnected = False
-            MCRCON.command(cmd)
-            return
+            return MCRCON.command(cmd)
         except (MCRconException, ConnectionRefusedError, OSError):
             mcrcon_disconnected = True
             logger.exception("信息发送失败")
@@ -70,9 +69,9 @@ command_forwarding = on_command("mcs指令", permission=SUPERUSER, priority=10)
 @command_forwarding.handle()
 async def _(event: Event):
     cmd = event.get_plaintext()[len("mcs指令") :].strip()
-    print("mcs指令", cmd)
     if cmd:
-        call_command(f"/{cmd}")
+        resp = call_command(cmd)
+        await command_forwarding.finish(resp)
 
 
 LOG_PATH = Path(__config__.mcs_log_path)
@@ -84,34 +83,32 @@ elif not LOG_PATH.exists():
 else:
     bots = get_bots()
 
-    async def send(target_id: str, bot: Bot, message: str):
-        try:
-            target = Target(id=target_id, private=False, self_id=bot.self_id)
-            await target.send(message)
-        except Exception as e:
-            logger.error(f"{bot.self_id}发送消息失败: {e}")
+    def sendtask(target_id: str, bot: Bot, message: str):
+        target = Target(id=target_id, private=False, self_id=bot.self_id)
+        return target.send(message)
 
     logger.success(f"已找定位到文件 {LOG_PATH.as_posix()}")
-    mc_broadcast = __config__.mcs_mc_broadcast
-    if "all" in mc_broadcast:
+    broadcast_config = __config__.mcs_mc_broadcast
+    if "all" in broadcast_config:
+        broadcast_groups = broadcast_config["all"]
 
         async def broadcast(message: str):
-            global bots, mc_broadcast
+            global bots, broadcast_groups
             try:
                 bot = next(iter(bots.values()))
             except StopIteration:
                 return
-            await asyncio.gather(*[send(group_id, bot, message) for group_id in mc_broadcast["all"]])
+            await asyncio.gather(*[sendtask(group_id, bot, message) for group_id in broadcast_groups])
 
     else:
 
         async def broadcast(message: str):
-            global bots, mc_broadcast
+            global bots, broadcast_config
             await asyncio.gather(
                 *(
-                    send(group_id, bot, message)
+                    sendtask(group_id, bot, message)
                     for bot_id, bot in bots.items()
-                    if (group_ids := mc_broadcast.get(bot_id))
+                    if (group_ids := broadcast_config.get(bot_id))
                     for group_id in group_ids
                 )
             )
@@ -174,3 +171,5 @@ else:
         global task, listen_running
         listen_running = False
         await task
+        if not mcrcon_disconnected:
+            MCRCON.disconnect()
